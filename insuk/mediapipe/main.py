@@ -1,5 +1,9 @@
 import cv2
+import keyboard
+import mouse
 import mediapipe as mp
+import numpy as np
+from PIL import ImageGrab
 import time         ####
 import numpy as np  ####
 mp_drawing = mp.solutions.drawing_utils
@@ -172,24 +176,53 @@ FACE_CONNECTIONS = frozenset([
     # annotated_image = cv2.circle(annotated_image, idx_to_coordinates.values(), 1, (0, 0, 255), -1)
     # cv2.imshow('hi',annotated_image)
     # cv2.waitKey(0)
-
+####
+# def set_roi():
+#     global ROI_SET, x1, y1, x2, y2
+#     ROI_SET = False
+#     print("Select your ROI using mouse drag.")
+#     while(mouse.is_pressed() == False):
+#         x1, y1 = mouse.get_position()
+#         while(mouse.is_pressed() == True):
+#             x2, y2 = mouse.get_position()
+#             while(mouse.is_pressed() == False):
+#                 print("Your ROI : {0}, {1}, {2}, {3}".format(x1, y1, x2, y2))
+#                 ROI_SET = True
+#                 return
+# keyboard.add_hotkey("ctrl+1", lambda: set_roi())
+# ROI_SET = False
+# x1, y1, x2, y2 = 0, 0, 0, 0
+# while True:
+#     if ROI_SET == True:
+#         image = cv2.cvtColor(np.array(ImageGrab.grab(bbox=(x1, y1, x2, y2))), cv2.COLOR_BGR2RGB)
+#         cv2.imshow("image", image)
+#         key = cv2.waitKey(100)
+#         if key == ord("q"):
+#             print("Quit")
+#             break
+# cv2.destroyAllWindows()
+####
 # For webcam input:
 drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 #cap = cv2.VideoCapture(0)
-cap = cv2.VideoCapture("oking.mp4")
+# cap = cv2.VideoCapture("oking.mp4")
 with mp_face_mesh.FaceMesh(
     min_detection_confidence=0.5,
-    min_tracking_confidence=0.5) as face_mesh:
-  while cap.isOpened():
-    success, image = cap.read()
-    if not success:
-      print("Ignoring empty camera frame.")
-      # If loading a video, use 'break' instead of 'continue'.
-      break
+    min_tracking_confidence=0.5,
+    max_num_faces=2) as face_mesh:
+  # while cap.isOpened():
+  while True:
+    image = ImageGrab.grab(bbox=(50, 200, 1000, 1000))  # 스크린을 캡쳐하여 변수에 저장##@!#!@
+    image = np.array(image)  # 이미지를 배열로 변환##@!#!@#!@
+    # success, image = cap.read()
+    # if not success:
+    #   print("Ignoring empty camera frame.")
+    #   # If loading a video, use 'break' instead of 'continue'.
+    #   break
 
     # Flip the image horizontally for a later selfie-view display, and convert
     # the BGR image to RGB.
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     # To improve performance, optionally mark the image as not writeable to
     # pass by reference.
     image.flags.writeable = False
@@ -206,7 +239,8 @@ with mp_face_mesh.FaceMesh(
             connections=mp_face_mesh.FACE_CONNECTIONS,
             landmark_drawing_spec=drawing_spec,
             connection_drawing_spec=drawing_spec)
+    # image = cv2.resize(image,dsize=(1000, 1000))
     cv2.imshow('MediaPipe FaceMesh', image)
     if cv2.waitKey(5) & 0xFF == 27:
       break
-cap.release()
+# cap.release()
