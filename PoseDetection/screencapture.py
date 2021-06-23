@@ -1,16 +1,11 @@
 from PIL import ImageGrab
 import numpy as np
 
-# image = np.array()
-
 class CaptureBoard:
+    def __init__(self):
+        self.capture_size = (0, 0, 1920, 1080)
 
     def captureScreen(self):
-        # global image
-        image = ImageGrab.grab(bbox=(0, 0, 1920, 1080))
+        image = ImageGrab.grab(bbox=self.capture_size)
         image = np.array(image)
         return image
-
-    # def get_frame(self):
-    #     global image
-    #     return image
