@@ -78,15 +78,16 @@ MOUTH_LEFT_ANGLE = []
 MOUTH_RIGHT_ANGLE = []
 
 for i in range(0, len(dataframe)):
-    left_eyebrow_v_rate_result = point_to_point_distance(dataframe.loc[i, "왼눈썹/중간/위/x"],
-                                                         dataframe.loc[i, "왼눈썹/중간/위/y"],
-                                                         dataframe.loc[i, "왼눈썹/중간/아래/x"],
-                                                         dataframe.loc[i, "왼눈썹/중간/아래/y"])  # 왼눈썹 수직 거리
 
-    right_eyebrow_v_rate_result = point_to_point_distance(dataframe.loc[i, "오른눈썹/중간/위/x"],
-                                                          dataframe.loc[i, "오른눈썹/중간/위/y"],
-                                                          dataframe.loc[i, "오른눈썹/중간/아래/x"],
-                                                          dataframe.loc[i, "오른눈썹/중간/아래/y"])  # 오른눈썹 수직 거리
+    left_eyebrow_v_rate_result = point_to_point_distance(dataframe.loc[i, "왼눈썹/중간/아래/x"],
+                                                         dataframe.loc[i, "왼눈썹/중간/아래/y"],
+                                                         dataframe.loc[i, "왼눈/6시/x"],
+                                                         dataframe.loc[i, "왼눈/6시/y"])  # 왼눈썹 수직 비율
+
+    right_eyebrow_v_rate_result = point_to_point_distance(dataframe.loc[i, "오른눈썹/중간/아래/x"],
+                                                          dataframe.loc[i, "오른눈썹/중간/아래/y"],
+                                                          dataframe.loc[i, "오른눈/6시/x"],
+                                                          dataframe.loc[i, "오른눈/6시/y"])  # 오른눈썹 수직 비율
 
     left_cheekbone_v_rate_result = point_to_point_distance(dataframe.loc[i, "얼굴/11시/x"], dataframe.loc[i, "얼굴/11시/y"],
                                                            dataframe.loc[i, "왼쪽/광대/x"],
@@ -187,7 +188,6 @@ for i in range(0, len(dataframe)):
     MOUTH_LEFT_ANGLE.append(mouth_left_angle_result)
     MOUTH_RIGHT_ANGLE.append(mouth_right_angle_result)
 
-
 left_cheekbone_face_v_result_array = np.array(LEFT_CHEEKBONE_RATE) / np.array(LEFT_FACE_V_RATE)  # 왼쪽 광대뼈 수직 비율
 right_cheekbone_face_v_result_array = np.array(RIGHT_CHEEKBONE_RATE) / np.array(RIGHT_FACE_V_RATE)  # 오른쪽 광대뼈 수직 비율
 left_eyebrow_face_v_result_array = np.array(LEFT_EYEBROW_RATE) / np.array(LEFT_FACE_V_RATE)  # 왼쪽 눈썹 수직 비율
@@ -251,72 +251,44 @@ for name, i in zip(list_string_name, list_name):
 print("이상값 파일 행 번호", sorted(outliers_file_number))  # 순서의 번호 파일 자체의 번호 아님
 print("이상값 파일 개수", len(outliers_file_number))
 
-"""
-이상치 데이터 프레임에서 제거하는 부분
-"""
-#
-# print("처음 데이터프레임 개수:", len(dataframe))
-# for number_index in sorted(outliers_file_number):
-#     dataframe = dataframe.drop(index=number_index)
-#
-# print(dataframe.index)
-# print("박스플롯 이상치 제거한 데이터프레임 개수:", len(dataframe))
-#
-#
-# insuk = [3324, 3325, 3350, 3383, 3400, 3419, 3428, 3447, 3470, 3471, 3474, 3475, 3476, 3489, 3520,
-#          3528, 3544, 3577, 3628, 3673, 3684, 3687, 3691, 3692, 3741, 3797, 3819, 3883, 3907, 3911, 4005, 4020, 4052, 4120, 4155, 4157, 4205, 4230, 4263, 4320, 4341, 4372, 4397, 4420, 4502, 4518, 4532, 4601, 4608, 4614, 4720, 4786, 4836, 4859, 4868, 4930, 4933]
-#
-# sangmin = [1662, 1670, 1678, 1691, 1701, 1715, 1717, 1722, 1729, 1739, 1747, 1771, 1774, 1790, 1808, 1818, 1831, 1868, 1874, 1886, 1921, 1922, 1923, 1974, 1980, 1999, 2043, 2091, 2094, 2097, 2103, 2189, 2228, 2241, 2243, 2256, 2258, 2294, 2303, 2335, 2357, 2381, 2384, 2396, 2473, 2481, 2485, 2487, 2504, 2608, 2720, 2726, 2767, 2808, 2816, 2855, 2857, 2881, 2972, 2977, 2982, 2983, 3007, 3018, 3019, 3020, 3023, 3024, 3099, 3118, 3125, 3163, 3180, 3202, 3214, 3257, 3265]
-#
-# tekjun = [12, 15, 56, 65, 101, 130, 135, 150, 151, 160, 199, 237, 241, 258, 279, 286, 293, 305, 336, 339, 346, 365, 366, 369, 375, 392, 393, 401, 424, 431, 478, 512, 522, 536, 540, 543, 558, 575, 577, 582, 602, 612, 613, 628, 636, 640, 645, 675, 710, 726, 738, 740, 744, 770, 772, 797, 808, 844, 847, 902, 905, 907, 923, 950, 968, 972, 979, 986, 994, 1000, 1040, 1054, 1056, 1057, 1092, 1100, 1111, 1118, 1128, 1136, 1156, 1160, 1184, 1195, 1207, 1214, 1217, 1218, 1221, 1279, 1288, 1310, 1317, 1318, 1326, 1329, 1337, 1344, 1346, 1347, 1387, 1396, 1400, 1416, 1436, 1448, 1455, 1470, 1491, 1509, 1530, 1571, 1573, 1587, 1593, 1600, 1604, 1612, 1613]
-#
-# fail_img_list = insuk + sangmin + tekjun
-#
-# for fail_img_index in fail_img_list:
-#     dataframe.drop(dataframe.loc[dataframe['파일번호'] == fail_img_index].index, inplace=True)
-#
-# print("우리가 거른거 제거한 데이터프레임 개수: ", len(dataframe))
 
-"""
-여기까지
-"""
-# # 이상치 제거된 이미지 표시
-# print("-----------------------이상치 제거된 이미지 표시 -------------------")
-# print("-----------------------이상치 제거된 이미지 표시 -------------------")
-# print("-----------------------이상치 제거된 이미지 표시 -------------------")
-#
-# pass_list = []
-# fail_list = []
-# count = int(len(dataframe) / 3 * 2)
-# while count < len(dataframe):
-#     print(f"현재 행번호: {count} /// q: fial w: pass")
-#     if count in outliers_file_number:  # 이상치 세트안에 잇으면 넘기기
-#         print(f"{count}행 이상치 다음 번호 이동\n")
-#         count = count + 1
-#         continue
-#     path = "C:\\Users\\insuk\\Desktop\\fer2013\\train\\Neutral"
-#     img_path = str(dataframe.loc[count, "파일번호"]) + ".jpg"
-#     total_path = path + '/' + img_path
-#     print(total_path)
-#     image = cv2.imread(total_path, cv2.IMREAD_ANYCOLOR)
-#     image = cv2.resize(image, dsize=(200, 200))
-#     cv2.imshow("img", image)
-#     ret = cv2.waitKey(0)
-#     if ret == 119:# w = 119
-#         print(f"{count}번 pass\n")
-#         pass_list.append(dataframe.loc[count, "파일번호"])
-#         count = count + 1
-#     elif ret == 113:# q = 113
-#         print(f"{count}번 fail\n")
-#         fail_list.append(dataframe.loc[count, "파일번호"])
-#         count = count + 1
-#     else:
-#         print("\n#################다시 입력 q: 이상 w: 정상#############")
-#
-#     cv2.destroyAllWindows()
-#
-# print("니가 걸러낸거: ",fail_list) # 행번호 아니고 파일 번호임 csv '파일속성'
-# print("니가 통과시킨거: ",pass_list)# 행번호 아니고 파일 번호임 csv '파일속성'
+# 이상치 제거된 이미지 표시
+print("-----------------------이상치 제거된 이미지 표시 -------------------")
+print("-----------------------이상치 제거된 이미지 표시 -------------------")
+print("-----------------------이상치 제거된 이미지 표시 -------------------")
+
+pass_list = []
+fail_list = []
+count = int(len(dataframe) / 3 * 2)
+while count < len(dataframe):
+    print(f"현재 행번호: {count} /// q: fial w: pass")
+    if count in outliers_file_number:  # 이상치 세트안에 잇으면 넘기기
+        print(f"{count}행 이상치 다음 번호 이동\n")
+        count = count + 1
+        continue
+    path = "C:\\Users\\insuk\\Desktop\\fer2013\\train\\Neutral"
+    img_path = str(dataframe.loc[count, "파일번호"]) + ".jpg"
+    total_path = path + '/' + img_path
+    print(total_path)
+    image = cv2.imread(total_path, cv2.IMREAD_ANYCOLOR)
+    image = cv2.resize(image, dsize=(200, 200))
+    cv2.imshow("img", image)
+    ret = cv2.waitKey(0)
+    if ret == 119:# w = 119
+        print(f"{count}번 pass\n")
+        pass_list.append(dataframe.loc[count, "파일번호"])
+        count = count + 1
+    elif ret == 113:# q = 113
+        print(f"{count}번 fail\n")
+        fail_list.append(dataframe.loc[count, "파일번호"])
+        count = count + 1
+    else:
+        print("\n#################다시 입력 q: 이상 w: 정상#############")
+
+    cv2.destroyAllWindows()
+
+print("니가 걸러낸거: ",fail_list) # 행번호 아니고 파일 번호임 csv '파일속성'
+print("니가 통과시킨거: ",pass_list)# 행번호 아니고 파일 번호임 csv '파일속성'
 
 # for i in range(0, len(dataframe)):
 #     print("현재 행번호: ",i)
@@ -342,100 +314,100 @@ print("이상값 파일 개수", len(outliers_file_number))
 #     cv2.destroyAllWindows()
 
 
-boxplot_dataframe_3 = {'파일번호': dataframe['파일번호'],
-                       '왼쪽 광대뼈 수직 비율': left_cheekbone_face_v_result_array,
-                       '오른쪽 광대뼈 수직 비율': right_cheekbone_face_v_result_array,
-                       '왼쪽 눈썹 수직 비율': left_eyebrow_face_v_result_array,
-                       '오른쪽 눈썹 수직 비율': right_eyebrow_face_v_result_array}
-
-boxplot_dataframe = {'파일번호': dataframe['파일번호'],
-                     '왼쪽눈 수직 비율': left_eye_face_v_result_array,
-                     '오른쪽눈 수직 비율': right_eye_face_v_result_array,
-                     '입 수직 비율': middle_mouth_face_v_result_array,
-                     '입 수평 비율': mouth_face_h_result_array,
-                     '왼눈 수평 비율': left_eye_face_h_result_array,
-                     '오른눈 수평 비율': right_eye_face_h_result_array}
-
-boxplot_dataframe2 = {'파일번호': dataframe['파일번호'],
-                      "왼눈 오른쪽 각도": LEFT_EYE_RIGHT_ANGLE,
-                      "왼눈 왼쪽 각도": LEFT_EYE_LEFT_ANGLE,
-                      "오른눈 오른쪽 각도": RIGHT_EYE_RIGHT_ANGLE,
-                      "오른눈 왼쪽 각도": RIGHT_EYE_LEFT_ANGLE,
-                      "입술 왼쪽 각도": MOUTH_LEFT_ANGLE,
-                      "입술 오른쪽 각도": MOUTH_RIGHT_ANGLE}
-
-#거를거 저장할 데이터 프레임
-save_data_dataframe = {'파일번호': dataframe['파일번호'],
-                       '왼쪽 광대뼈 수직 비율': left_cheekbone_face_v_result_array,
-                       '오른쪽 광대뼈 수직 비율': right_cheekbone_face_v_result_array,
-                       '왼쪽 눈썹 수직 비율': left_eyebrow_face_v_result_array,
-                       '오른쪽 눈썹 수직 비율': right_eyebrow_face_v_result_array,
-                       '왼쪽눈 수직 비율': left_eye_face_v_result_array,
-                       '오른쪽눈 수직 비율': right_eye_face_v_result_array,
-                       '입 수직 비율': middle_mouth_face_v_result_array,
-                       '입 수평 비율': mouth_face_h_result_array,
-                       '왼눈 수평 비율': left_eye_face_h_result_array,
-                       '오른눈 수평 비율': right_eye_face_h_result_array,
-                       "왼눈 오른쪽 각도": LEFT_EYE_RIGHT_ANGLE,
-                       "왼눈 왼쪽 각도": LEFT_EYE_LEFT_ANGLE,
-                       "오른눈 오른쪽 각도": RIGHT_EYE_RIGHT_ANGLE,
-                       "오른눈 왼쪽 각도": RIGHT_EYE_LEFT_ANGLE,
-                       "입술 왼쪽 각도": MOUTH_LEFT_ANGLE,
-                       "입술 오른쪽 각도": MOUTH_RIGHT_ANGLE
-                       }
-
-boxplot_dataframe = pd.DataFrame(boxplot_dataframe2)
-save_dataframe = pd.DataFrame(save_data_dataframe)#거를거 저장할 데이터 프레임
-
+# boxplot_dataframe_3 = {
+#                        '왼쪽 광대뼈 수직 비율': left_cheekbone_face_v_result_array,
+#                        '오른쪽 광대뼈 수직 비율': right_cheekbone_face_v_result_array,
+#                        '왼쪽 눈썹 수직 비율': left_eyebrow_face_v_result_array,
+#                        '오른쪽 눈썹 수직 비율': right_eyebrow_face_v_result_array}
+#
+# boxplot_dataframe = {'파일번호': dataframe['파일번호'],
+#                      '왼쪽눈 수직 비율': left_eye_face_v_result_array,
+#                      '오른쪽눈 수직 비율': right_eye_face_v_result_array,
+#                      '입 수직 비율': middle_mouth_face_v_result_array,
+#                      '입 수평 비율': mouth_face_h_result_array,
+#                      '왼눈 수평 비율': left_eye_face_h_result_array,
+#                      '오른눈 수평 비율': right_eye_face_h_result_array}
+#
+# boxplot_dataframe2 = {'파일번호': dataframe['파일번호'],
+#                       "왼눈 오른쪽 각도": LEFT_EYE_RIGHT_ANGLE,
+#                       "왼눈 왼쪽 각도": LEFT_EYE_LEFT_ANGLE,
+#                       "오른눈 오른쪽 각도": RIGHT_EYE_RIGHT_ANGLE,
+#                       "오른눈 왼쪽 각도": RIGHT_EYE_LEFT_ANGLE,
+#                       "입술 왼쪽 각도": MOUTH_LEFT_ANGLE,
+#                       "입술 오른쪽 각도": MOUTH_RIGHT_ANGLE}
+#
+# # 거를거 저장할 데이터 프레임
+# save_data_dataframe = {'파일번호': dataframe['파일번호'],
+#                        '왼쪽 광대뼈 수직 비율': left_cheekbone_face_v_result_array,
+#                        '오른쪽 광대뼈 수직 비율': right_cheekbone_face_v_result_array,
+#                        '왼쪽 눈썹 수직 비율': left_eyebrow_face_v_result_array,
+#                        '오른쪽 눈썹 수직 비율': right_eyebrow_face_v_result_array,
+#                        '왼쪽눈 수직 비율': left_eye_face_v_result_array,
+#                        '오른쪽눈 수직 비율': right_eye_face_v_result_array,
+#                        '입 수직 비율': middle_mouth_face_v_result_array,
+#                        '입 수평 비율': mouth_face_h_result_array,
+#                        '왼눈 수평 비율': left_eye_face_h_result_array,
+#                        '오른눈 수평 비율': right_eye_face_h_result_array,
+#                        "왼눈 오른쪽 각도": LEFT_EYE_RIGHT_ANGLE,
+#                        "왼눈 왼쪽 각도": LEFT_EYE_LEFT_ANGLE,
+#                        "오른눈 오른쪽 각도": RIGHT_EYE_RIGHT_ANGLE,
+#                        "오른눈 왼쪽 각도": RIGHT_EYE_LEFT_ANGLE,
+#                        "입술 왼쪽 각도": MOUTH_LEFT_ANGLE,
+#                        "입술 오른쪽 각도": MOUTH_RIGHT_ANGLE
+#                        }
+#
+# boxplot_dataframe = pd.DataFrame(boxplot_dataframe_3)
+# save_dataframe = pd.DataFrame(save_data_dataframe)  # 거를거 저장할 데이터 프레임
+#
 # ############################################삭제할부분#############
 # plt.figure(figsize=(30, 30))
 # boxplot = boxplot_dataframe.boxplot(fontsize=10, rot=30)
 # plt.show()
 # ###################################################################
-""""""  # 최종 이상치 제거한 boxplot 그리는 부분
-
-print("처음 데이터프레임 개수:", len(boxplot_dataframe))
-for number_index in sorted(outliers_file_number):
-    boxplot_dataframe = boxplot_dataframe.drop(index=number_index)
-    save_dataframe = save_dataframe.drop(index=number_index)#거를거 저장할 데이터 프레임
-
-print(boxplot_dataframe.index)
-print("박스플롯 이상치 제거한 데이터프레임 개수:", len(boxplot_dataframe))
-
-insuk = [3324, 3325, 3350, 3383, 3400, 3419, 3428, 3447, 3470, 3471, 3474, 3475, 3476, 3489, 3520,
-         3528, 3544, 3577, 3628, 3673, 3684, 3687, 3691, 3692, 3741, 3797, 3819, 3883, 3907, 3911, 4005, 4020, 4052,
-         4120, 4155, 4157, 4205, 4230, 4263, 4320, 4341, 4372, 4397, 4420, 4502, 4518, 4532, 4601, 4608, 4614, 4720,
-         4786, 4836, 4859, 4868, 4930, 4933]
-
-sangmin = [1662, 1670, 1678, 1691, 1701, 1715, 1717, 1722, 1729, 1739, 1747, 1771, 1774, 1790, 1808, 1818, 1831, 1868,
-           1874, 1886, 1921, 1922, 1923, 1974, 1980, 1999, 2043, 2091, 2094, 2097, 2103, 2189, 2228, 2241, 2243, 2256,
-           2258, 2294, 2303, 2335, 2357, 2381, 2384, 2396, 2473, 2481, 2485, 2487, 2504, 2608, 2720, 2726, 2767, 2808,
-           2816, 2855, 2857, 2881, 2972, 2977, 2982, 2983, 3007, 3018, 3019, 3020, 3023, 3024, 3099, 3118, 3125, 3163,
-           3180, 3202, 3214, 3257, 3265]
-
-tekjun = [12, 15, 56, 65, 101, 130, 135, 150, 151, 160, 199, 237, 241, 258, 279, 286, 293, 305, 336, 339, 346, 365, 366,
-          369, 375, 392, 393, 401, 424, 431, 478, 512, 522, 536, 540, 543, 558, 575, 577, 582, 602, 612, 613, 628, 636,
-          640, 645, 675, 710, 726, 738, 740, 744, 770, 772, 797, 808, 844, 847, 902, 905, 907, 923, 950, 968, 972, 979,
-          986, 994, 1000, 1040, 1054, 1056, 1057, 1092, 1100, 1111, 1118, 1128, 1136, 1156, 1160, 1184, 1195, 1207,
-          1214, 1217, 1218, 1221, 1279, 1288, 1310, 1317, 1318, 1326, 1329, 1337, 1344, 1346, 1347, 1387, 1396, 1400,
-          1416, 1436, 1448, 1455, 1470, 1491, 1509, 1530, 1571, 1573, 1587, 1593, 1600, 1604, 1612, 1613]
-
-fail_img_list = insuk + sangmin + tekjun
-
-for fail_img_index in fail_img_list:
-    boxplot_dataframe.drop(boxplot_dataframe.loc[boxplot_dataframe['파일번호'] == fail_img_index].index, inplace=True)
-    save_dataframe.drop(save_dataframe.loc[save_dataframe['파일번호'] == fail_img_index].index, inplace=True)
-
-print("우리가 거른거 제거한 데이터프레임 개수: ", len(boxplot_dataframe))
-
-del boxplot_dataframe['파일번호']  # 파일번호 삭제
-
-#이상치 제거된 데이터프레임 저장
-save_dataframe.reset_index(inplace=True)
-save_dataframe.to_csv(f"remove_outliers_data.csv",encoding='utf-8-sig', mode='w') # 저장 하는부분
-
-""""""
-
-plt.figure(figsize=(30, 30))
-boxplot = boxplot_dataframe.boxplot(fontsize=10, rot=30)
-plt.show()
+# """"""  # 최종 이상치 제거한 boxplot 그리는 부분
+#
+# print("처음 데이터프레임 개수:", len(boxplot_dataframe))
+# for number_index in sorted(outliers_file_number):
+#     boxplot_dataframe = boxplot_dataframe.drop(index=number_index)
+#     save_dataframe = save_dataframe.drop(index=number_index)  # 거를거 저장할 데이터 프레임
+#
+# print(boxplot_dataframe.index)
+# print("박스플롯 이상치 제거한 데이터프레임 개수:", len(boxplot_dataframe))
+#
+# insuk = [3324, 3325, 3350, 3383, 3400, 3419, 3428, 3447, 3470, 3471, 3474, 3475, 3476, 3489, 3520,
+#          3528, 3544, 3577, 3628, 3673, 3684, 3687, 3691, 3692, 3741, 3797, 3819, 3883, 3907, 3911, 4005, 4020, 4052,
+#          4120, 4155, 4157, 4205, 4230, 4263, 4320, 4341, 4372, 4397, 4420, 4502, 4518, 4532, 4601, 4608, 4614, 4720,
+#          4786, 4836, 4859, 4868, 4930, 4933]
+#
+# sangmin = [1662, 1670, 1678, 1691, 1701, 1715, 1717, 1722, 1729, 1739, 1747, 1771, 1774, 1790, 1808, 1818, 1831, 1868,
+#            1874, 1886, 1921, 1922, 1923, 1974, 1980, 1999, 2043, 2091, 2094, 2097, 2103, 2189, 2228, 2241, 2243, 2256,
+#            2258, 2294, 2303, 2335, 2357, 2381, 2384, 2396, 2473, 2481, 2485, 2487, 2504, 2608, 2720, 2726, 2767, 2808,
+#            2816, 2855, 2857, 2881, 2972, 2977, 2982, 2983, 3007, 3018, 3019, 3020, 3023, 3024, 3099, 3118, 3125, 3163,
+#            3180, 3202, 3214, 3257, 3265]
+#
+# tekjun = [12, 15, 56, 65, 101, 130, 135, 150, 151, 160, 199, 237, 241, 258, 279, 286, 293, 305, 336, 339, 346, 365, 366,
+#           369, 375, 392, 393, 401, 424, 431, 478, 512, 522, 536, 540, 543, 558, 575, 577, 582, 602, 612, 613, 628, 636,
+#           640, 645, 675, 710, 726, 738, 740, 744, 770, 772, 797, 808, 844, 847, 902, 905, 907, 923, 950, 968, 972, 979,
+#           986, 994, 1000, 1040, 1054, 1056, 1057, 1092, 1100, 1111, 1118, 1128, 1136, 1156, 1160, 1184, 1195, 1207,
+#           1214, 1217, 1218, 1221, 1279, 1288, 1310, 1317, 1318, 1326, 1329, 1337, 1344, 1346, 1347, 1387, 1396, 1400,
+#           1416, 1436, 1448, 1455, 1470, 1491, 1509, 1530, 1571, 1573, 1587, 1593, 1600, 1604, 1612, 1613]
+#
+# fail_img_list = insuk + sangmin + tekjun
+#
+# for fail_img_index in fail_img_list:
+#     boxplot_dataframe.drop(boxplot_dataframe.loc[boxplot_dataframe['파일번호'] == fail_img_index].index, inplace=True)
+#     save_dataframe.drop(save_dataframe.loc[save_dataframe['파일번호'] == fail_img_index].index, inplace=True)
+#
+# print("우리가 거른거 제거한 데이터프레임 개수: ", len(boxplot_dataframe))
+#
+# del boxplot_dataframe['파일번호']  # 파일번호 삭제
+#
+# # 이상치 제거된 데이터프레임 저장
+# save_dataframe.reset_index(inplace=True)
+# save_dataframe.to_csv(f"remove_outliers_data.csv", encoding='utf-8-sig', mode='w')  # 저장 하는부분
+#
+# """"""
+#
+# plt.figure(figsize=(30, 30))
+# boxplot = boxplot_dataframe.boxplot(fontsize=10, rot=30)
+# plt.show()

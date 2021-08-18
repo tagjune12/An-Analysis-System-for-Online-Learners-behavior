@@ -103,7 +103,7 @@ def angle_between(p1, p2, p3):  # 3점 사이 각도
     return result
 
 def rate_processing(name,img_point_dict_data):
-    rate_name_point_dict = {"왼쪽 광대뼈 수직 비율":[67,50,67,149], "오른쪽 광대뼈 수직 비율":[297,280,297,378], "왼쪽 눈썹 수직 비율":[105,52,67,149], "오른쪽 눈썹 수직 비율":[334,282,297,378],
+    rate_name_point_dict = {"왼쪽 광대뼈 수직 비율":[67,50,67,149], "오른쪽 광대뼈 수직 비율":[297,280,297,378], "왼쪽 눈썹 수직 비율":[52,144,67,149], "오른쪽 눈썹 수직 비율":[282,373,297,378],
                        "왼쪽눈 수직 비율":[159,144,67,149], "오른쪽눈 수직 비율":[386,373,297,378], "입 수직 비율":[17,0,10,152], "입 수평 비율":[61,291,288,58], "왼눈 수평 비율":[33,133,356,127],
                        "오른눈 수평 비율":[362,263,356,127]}
 
@@ -153,13 +153,23 @@ def process_data_rates(img_point_dict_data)->dict:
 def state_classification(img_porcessing_data, mean_data=mean_data): # img_porcessing_data : 현재 사진에서 각도 비율 계산한것 / mean_data : fer2013 평균 각도 비율 계산한것
 
     keys_list = list(img_porcessing_data.keys())
-    values_gap = []
-    for i in range(len(img_porcessing_data)):
-        values_gap.append(abs(img_porcessing_data[keys_list[i]]-mean_data[i]))
+    values_gap = {}
+    for i, key in zip(range(len(img_porcessing_data)),keys_list):
+        values_gap[key] = (img_porcessing_data[keys_list[i]]-mean_data[i])
+        # print(f"{key} 차이: {abs(img_porcessing_data[keys_list[i]]-mean_data[i])}")
 
     print("\n\n두 값 차이",values_gap)
+    print(abs(values_gap["왼쪽눈 수직 비율"]))
 
-    return
+    # if abs(values_gap["왼쪽눈 수직 비율"]) > 0.009 or abs(values_gap["오른쪽눈 수직 비율"]) > 0.009:
+    #     return "졸음 상태"
+
+    if values_gap["왼눈 오른쪽 각도"] > -0.5 or values_gap["왼눈 왼쪽 각도"] > -0.5 or values_gap["오른눈 오른쪽 각도"] > -0.5 or values_gap["오른눈 왼쪽 각도"] > -0.5:
+        return "집중"
+    else:
+        return "졸음상태"
+
+    return "집중"
 """**************기준 잡는 함수***************"""
 
 
@@ -305,12 +315,12 @@ with mp_face_mesh.FaceMesh(
         static_image_mode=True,
         max_num_faces=1,
         min_detection_confidence=0.5) as face_mesh:
-    file_list = {"people123123.jpg": 1}
+    file_list = {"boring2.jpg": 1}
     for idx, file in enumerate(file_list):
         # print(file)
         image = cv2.imread(file)
         # Convert the BGR image to RGB before processing.
-        # image = cv2.resize(image,dsize=(300,300))
+        image = cv2.resize(image,dsize=(500,500))
         results = face_mesh.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
         # print("result: {0}".format(results))
 

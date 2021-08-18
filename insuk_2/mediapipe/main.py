@@ -148,7 +148,7 @@ with mp_face_mesh.FaceMesh(
     static_image_mode=True,
     max_num_faces=1,
     min_detection_confidence=0.5) as face_mesh:
-  file_list = {"asd123.jfif":1 }
+  file_list = {"people123123.jpg":1 }
   for idx, file in enumerate(file_list):
     #print(file)
     image = cv2.imread(file)
