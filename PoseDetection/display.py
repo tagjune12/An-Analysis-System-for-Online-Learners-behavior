@@ -23,6 +23,8 @@ class Display:
 
             if flag and len(np.squeeze(image_start)) != 0:
                 capture_frame = featureDetector.detectFeaturePoints(capture_frame, image_start, image_end)  # 특징점 검출
+                # 이제 특징점 검출 결과가 프레임을 반환하는게 아닌 좌표를 반환해야함
+                # 반환한 좌표를 검출모듈에서 받고 결과를 
 
             # 화면에 표시
             capture_frame = cv2.resize(capture_frame, (960, 540))
