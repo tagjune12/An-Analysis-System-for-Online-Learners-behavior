@@ -37,11 +37,15 @@ FACE_RATE_DICT={"왼쪽 광대뼈 수직 비율": [39, 40, 39, 35], "오른쪽 �
                  "왼쪽 눈썹 수직 비율": [3, 13, 39, 35], "오른쪽 눈썹 수직 비율": [9, 13, 29, 33],
                  "왼쪽눈 수직 비율": [12, 13, 39, 35], "오른쪽눈 수직 비율": [16, 17, 29, 33],
                  "왼눈 수평 비율": [14, 15, 31, 37], "오른눈 수평 비율": [18, 19, 31, 37],
-                 "입 수직 비율": [20, 23, 28, 34], "입 수평 비율": [21, 22, 32, 36]}
-
-FACE_ANGLE_DICT={"왼눈 오른쪽 각도": [12, 15, 13], "왼눈 왼쪽 각도": [12, 14, 13],
+                 "입 수직 비율": [20, 23, 28, 34], "입 수평 비율": [21, 22, 32, 36],
+                 "왼눈 오른쪽 각도": [12, 15, 13], "왼눈 왼쪽 각도": [12, 14, 13],
                  "오른눈 오른쪽 각도": [16, 19, 17],"오른눈 왼쪽 각도": [16, 18, 17],
-                 "입술 왼쪽 각도": [27, 24, 26],"입술 오른쪽 각도": [27, 25, 26]}
+                 "입술 왼쪽 각도": [27, 24, 26],"입술 오른쪽 각도": [27, 25, 26]
+                }
+
+# FACE_ANGLE_DICT={"왼눈 오른쪽 각도": [12, 15, 13], "왼눈 왼쪽 각도": [12, 14, 13],
+#                  "오른눈 오른쪽 각도": [16, 19, 17],"오른눈 왼쪽 각도": [16, 18, 17],
+#                  "입술 왼쪽 각도": [27, 24, 26],"입술 오른쪽 각도": [27, 25, 26]}
 
 
 def point_to_point_distance(p1:list, p2:list)->float:
@@ -71,32 +75,6 @@ def get_angle(p1:list, p2:list, p3:list)->float:
     angle = (360 - angle) % 360
 
   return angle
-
-# def get_angle_face(name, img_point_dict_data):
-#   angle_name_point_dict = {"왼눈 오른쪽 각도": [159, 133, 144], "왼눈 왼쪽 각도": [159, 33, 144], "오른눈 오른쪽 각도": [386, 263, 373],
-#                            "오른눈 왼쪽 각도": [386, 362, 373], "입술 왼쪽 각도": [13, 78, 14],
-#                            "입술 오른쪽 각도": [13, 308, 14]}
-#
-#   if name in angle_name_point_dict:
-#     insert_point_list = angle_name_point_dict[name]
-#     result_angle = angle_between(img_point_dict_data[insert_point_list[0]], img_point_dict_data[insert_point_list[1]],
-#                                  img_point_dict_data[insert_point_list[2]])
-#
-#     return result_angle
-#
-# def angle_between_face(p1, p2, p3):  # 3점 사이 각도
-#   x1, y1 = p1
-#   x2, y2 = p2
-#   x3, y3 = p3
-#   deg1 = (360 + degrees(atan2(x1 - x2, y1 - y2))) % 360
-#   deg2 = (360 + degrees(atan2(x3 - x2, y3 - y2))) % 360
-#
-#   result = deg2 - deg1 if deg1 <= deg2 else 360 - (deg1 - deg2)
-#
-#   if result > 180:
-#     result = 360 - result
-#
-#   return result
 
 def cvt_Landmark_to_list(landmark)-> list:
   x = landmark.x
@@ -205,8 +183,8 @@ def process_data_rates(face_landmarks:list) -> dict:
     if "비율" in name:
       current_img_processing_data[name] = rate_processing(FACE_RATE_DICT[name], face_landmarks)
     elif "각도" in name:
-      # current_img_processing_data[name] = get_angle(name, face_landmarks) # 인자 안맞는거 오버로딩으로 해결을 할까--->안됨
-      current_img_processing_data[name] = get_angle(face_landmarks[FACE_ANGLE_DICT[name][0]],face_landmarks[FACE_ANGLE_DICT[name][1]],face_landmarks[FACE_ANGLE_DICT[name][2]])  # 인자 안맞는거 오버로딩으로 해결을 할까--->안됨
+      current_img_processing_data[name] = get_angle(face_landmarks[FACE_RATE_DICT[name][0]],face_landmarks[FACE_RATE_DICT[name][1]],face_landmarks[FACE_RATE_DICT[name][2]])  # 인자 안맞는거 오버로딩으로 해결을 할까--->안됨
+      print(f'각도{name}:{current_img_processing_data[name]}')
 
     else:
       print("오류?")
