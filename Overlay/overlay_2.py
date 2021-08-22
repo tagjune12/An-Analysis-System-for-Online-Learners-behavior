@@ -164,13 +164,13 @@ class Sticker(QtWidgets.QMainWindow):
 
     def SetWindow(self):
         tWnd = WindowFinder('계산기').GetHwnd()
-        print(tWnd) #test
+        # print(tWnd) #test
         if tWnd != 0 :
             tRect = win32gui.GetWindowRect(tWnd) # tuple(L,T,R,B)
             wWidth = tRect[2] - tRect[0]
             wHeight = tRect[3] - tRect[1]
             self.setGeometry(tRect[0], tRect[1], wWidth, wHeight)
-            print("running SetWindow")
+            # print("running SetWindow")
             # self.from_xy = [self.xy[0] + self.from_xy_diff[0], self.xy[1] + self.from_xy_diff[1]]
             # self.to_xy = [self.xy[0] + self.to_xy_diff[0], self.xy[1] + self.to_xy_diff[1]]
 
