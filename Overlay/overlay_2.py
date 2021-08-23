@@ -7,6 +7,7 @@ from PyQt5.QtGui import QMovie
 # from PyQt5.QtCore import *
 import threading
 from time import sleep
+import screencapture
 
 class Sticker(QtWidgets.QMainWindow):
 
@@ -24,6 +25,8 @@ class Sticker(QtWidgets.QMainWindow):
         self.size = size
         self.on_top = on_top
         self.localPos = None
+
+
 
         self.setupUi()
         # self.show()
@@ -163,13 +166,19 @@ class Sticker(QtWidgets.QMainWindow):
     #     QtWidgets.qApp.quit()
 
     def SetWindow(self):
-        tWnd = WindowFinder('계산기').GetHwnd()
-        # print(tWnd) #test
+        # tWnd = WindowFinder('계산기').GetHwnd()
+        tWnd = WindowFinder('Zoom 회의').GetHwnd()
+        print(tWnd) #test
         if tWnd != 0 :
             tRect = win32gui.GetWindowRect(tWnd) # tuple(L,T,R,B)
             wWidth = tRect[2] - tRect[0]
             wHeight = tRect[3] - tRect[1]
             self.setGeometry(tRect[0], tRect[1], wWidth, wHeight)
+            
+            # 추가한 부분 by.이택준
+            screencapture.CaptureBoard().set_capture_size(tRect)
+            print('Log from SetWindow')
+
             # print("running SetWindow")
             # self.from_xy = [self.xy[0] + self.from_xy_diff[0], self.xy[1] + self.from_xy_diff[1]]
             # self.to_xy = [self.xy[0] + self.to_xy_diff[0], self.xy[1] + self.to_xy_diff[1]]
@@ -209,10 +218,10 @@ class WindowFinder:
 
 
 
-if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv)
-
-    s1 = Sticker('red.gif', xy=[300, 300], size=0.3, on_top=True)
-
-
-    sys.exit(app.exec_())
+# if __name__ == '__main__':
+#     app = QtWidgets.QApplication(sys.argv)
+#
+#     s1 = Sticker('red.gif', xy=[300, 300], size=0.3, on_top=True)
+#
+#
+#     sys.exit(app.exec_())
