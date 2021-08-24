@@ -24,19 +24,14 @@ class MainWindow(QMainWindow, ui_file):
     # 분석 시작 버튼 클릭 이벤트 함수
     def analysisStartBtn_clicked(self):
         print("Start Button Clicked")
-        print("11")
-        self.overlayClass.show()
-        self.overlayClass.RunSetWindow()
+        self.overlayClass.RunOverlay()
         self.RunTossWindowSize()
-        # while True:
-        #     print("22")
 
 
     # 분석 종료 버튼 클릭 이벤트 함수
     def analysisEndBtn_clicked(self):
         print("End Button Clicked")
-        self.overlayClass.timer.stop()
-        self.overlayClass.hide()
+        self.overlayClass.StopOverlay()
 
     def TossWindowSize(self):
         # self.클래스명.SetCaptureSize(self.overlayClass.window_size)

@@ -178,10 +178,14 @@ class Sticker(QtWidgets.QMainWindow):
             self.window_size[2] = tRect[2]
             self.window_size[3] = tRect[3]
 
-    def RunSetWindow(self):
+    def RunOverlay(self):
         self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.SetWindow)
         self.timer.start()
+        self.show()
+    def StopOverlay(self):
+        self.timer.stop()
+        self.hide()
 
 # 부모 윈도우의 핸들을 검사합니다.
 class WindowFinder:
