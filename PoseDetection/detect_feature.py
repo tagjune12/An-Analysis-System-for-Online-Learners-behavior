@@ -1,18 +1,19 @@
 import mediapipe as mp
 import cv2
-from insukfile import drawing_utils as drawing
+# from insukfile import drawing_utils as drawing
 
 
 class FeatureDetector:
     def __init__(self):
-        self.mp_drawing = mp.solutions.drawing_utils
-        self.mp_drawing = drawing
+        # self.mp_drawing = mp.solutions.drawing_utils
+        # self.mp_drawing = drawing
         self.mp_holistic = mp.solutions.holistic
     def detectFeaturePoints(self, frame, image_start:list, image_end:list):
         # mp_drawing = self.mp_drawing
         mp_holistic = self.mp_holistic
 
         for i in range(len(image_start)):
+            print('Log from detectFeaturePoints')
             start = tuple(image_start[i])
             end = tuple(image_end[i])
             # image -> human 영역만 crop 된 이미지
