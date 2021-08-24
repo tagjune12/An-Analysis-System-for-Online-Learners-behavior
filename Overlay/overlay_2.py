@@ -7,7 +7,6 @@ from PyQt5.QtGui import QMovie
 # from PyQt5.QtCore import *
 import threading
 from time import sleep
-import screencapture
 
 class Sticker(QtWidgets.QMainWindow):
 
@@ -26,10 +25,11 @@ class Sticker(QtWidgets.QMainWindow):
         self.on_top = on_top
         self.localPos = None
 
-
-
         self.setupUi()
         # self.show()
+
+        self.window_size = [0, 0, 0, 0]
+
 
     # def dialog_open(self):
     #     # 버튼 추가
@@ -166,30 +166,18 @@ class Sticker(QtWidgets.QMainWindow):
     #     QtWidgets.qApp.quit()
 
     def SetWindow(self):
-        # tWnd = WindowFinder('계산기').GetHwnd()
-        tWnd = WindowFinder('Zoom 회의').GetHwnd()
-        print(tWnd) #test
+        tWnd = WindowFinder('계산기').GetHwnd()
+        # print(tWnd) #test
         if tWnd != 0 :
             tRect = win32gui.GetWindowRect(tWnd) # tuple(L,T,R,B)
             wWidth = tRect[2] - tRect[0]
             wHeight = tRect[3] - tRect[1]
             self.setGeometry(tRect[0], tRect[1], wWidth, wHeight)
-            
-            # 추가한 부분 by.이택준
-            screencapture.CaptureBoard().set_capture_size(tRect)
-            print('Log from SetWindow')
+            self.window_size[0] = tRect[0]
+            self.window_size[1] = tRect[1]
+            self.window_size[2] = tRect[2]
+            self.window_size[3] = tRect[3]
 
-            # print("running SetWindow")
-            # self.from_xy = [self.xy[0] + self.from_xy_diff[0], self.xy[1] + self.from_xy_diff[1]]
-            # self.to_xy = [self.xy[0] + self.to_xy_diff[0], self.xy[1] + self.to_xy_diff[1]]
-
-            # self.timer.timeout.connect(self.__walkHandler)
-            # self.timer.start()
-        # else :
-            # print("setwindow exit") ##
-            # # win32gui.DestroyWindow(hwnd)
-            # self.flag = True
-            # break
     def RunSetWindow(self):
         self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.SetWindow)
@@ -218,10 +206,10 @@ class WindowFinder:
 
 
 
-# if __name__ == '__main__':
-#     app = QtWidgets.QApplication(sys.argv)
-#
-#     s1 = Sticker('red.gif', xy=[300, 300], size=0.3, on_top=True)
-#
-#
-#     sys.exit(app.exec_())
+if __name__ == '__main__':
+    app = QtWidgets.QApplication(sys.argv)
+
+    s1 = Sticker('red.gif', xy=[300, 300], size=0.3, on_top=True)
+
+
+    sys.exit(app.exec_())
