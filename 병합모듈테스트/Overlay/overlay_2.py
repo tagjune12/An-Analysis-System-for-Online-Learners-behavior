@@ -1,3 +1,5 @@
+import os
+
 import win32gui
 import pywintypes
 import sys
@@ -11,7 +13,7 @@ import threading
 
 class Sticker(QtWidgets.QMainWindow):
 
-    def __init__(self, name, semaphore, img_path, xy,size=1.0, on_top=False):
+    def __init__(self, img_path, xy,size=1.0, on_top=False):
         super(Sticker, self).__init__()
         self.timer = QtCore.QTimer(self)
         self.img_path = img_path
@@ -27,9 +29,6 @@ class Sticker(QtWidgets.QMainWindow):
         self.localPos = None
 
         self.setupUi()
-
-        self.shm_name = name
-        self.semaphore = semaphore
 
         # self.show()
 
@@ -139,15 +138,20 @@ class Sticker(QtWidgets.QMainWindow):
         # self.setGeometry(self.xy[0], self.xy[1], 1920, 1080)###############
         # print(self.xy)
 
-    def SetWindow(self):
+    def SetWindow(self, shm, shard_data, sem):
         while True:
+            print(os.getpid())##########################
             # tWnd = WindowFinder('계산기').GetHwnd()
             # tWnd = WindowFinder('Zoom 회의').GetHwnd()
             tWnd = WindowFinder('카메라').GetHwnd()
             # print(tWnd) #test
             if tWnd != 0:
                 # self.semaphore.acquire()
-                exist_shm = shared_memory.SharedMemory(name=self.shm_name)
+                # exist_shm = shared_memory.SharedMemory(name=self.shm_name)
+
+                sem.acquire()
+                new_shm = shared_memory.SharedMemory(name=shm)
+                tmp_arr = np.ndarray(shard_data.shape, dtype=shard_data.dtype, buffer=new_shm.buf)
 
                 tRect = win32gui.GetWindowRect(tWnd)  # tuple(L,T,R,B)
                 wWidth = tRect[2] - tRect[0]
@@ -157,11 +161,18 @@ class Sticker(QtWidgets.QMainWindow):
                 # 추가한 부분 by.이택준
                 print(f'Log from SetWindow:{tRect}')
 
-                window_size = np.ndarray((4,), dtype=np.int32, buffer=exist_shm.buf)
-                window_size[0] = tRect[0]
-                window_size[1] = tRect[1]
-                window_size[2] = tRect[2]
-                window_size[3] = tRect[3]
+                for tmp in tmp_arr:
+                    tmp_arr[tmp] = tRect[tmp]
+
+                print("tmp_arr = ",tmp_arr)
+
+                sem.release()
+
+                # window_size = np.ndarray((4,), dtype=np.int32)
+                # window_size[0] = tRect[0]
+                # window_size[1] = tRect[1]
+                # window_size[2] = tRect[2]
+                # window_size[3] = tRect[3]
                 # self.semaphore.release()
 
     def RunSetWindow(self):

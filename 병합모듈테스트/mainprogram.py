@@ -1,3 +1,5 @@
+import os
+
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
 import sys
@@ -14,6 +16,9 @@ ui_file = uic.loadUiType('./UI/main.ui')[0]
 
 
 class MainWindow(QMainWindow, ui_file):
+    # manager = multiprocessing.Manager()
+    # capture_tuple = manager.list()
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -29,7 +34,8 @@ class MainWindow(QMainWindow, ui_file):
 
 
         # self.overlayClass = overlay_2.Sticker('red.gif', xy=[300, 300], size=0.3, on_top=True)
-        self.overlayClass = overlay_2.Sticker(self.shm.name, semaphore,'red.gif', xy=[300, 300],size=0.3, on_top=True)
+        # self.overlayClass = overlay_2.Sticker(self.shm.name, semaphore,'red.gif', xy=[300, 300],size=0.3, on_top=True)
+        self.overlayClass = overlay_2.Sticker('Overlay/red.gif', xy=[300, 300], size=0.3, on_top=True)
         self.displayclass = display.Display(self.shm.name, semaphore)
 
     # 분석 시작 버튼 클릭 이벤트 함수
@@ -37,7 +43,7 @@ class MainWindow(QMainWindow, ui_file):
         print("Start Button Clicked")
         screencapture.CaptureBoard()
 
-        self.displayclass.set_flag(True)
+        # self.displayclass.set_flag(True)
         # analysis_thread = threading.Thread(target=self.displayclass.analysize())
         # analysis_thread.daemon = True
         # analysis_thread.start()
@@ -45,33 +51,34 @@ class MainWindow(QMainWindow, ui_file):
 
         # self.overlayClass.show()
         # self.overlayClass.RunSetWindow()
-
+        #
         # self.overlayClass.execute_overlay()
         # self.displayclass.start_analysis()
 
         # semaphore = Semaphore(1)
-        # # capture_size = screencapture.CaptureBoard().get_capture_size()
-        # capture_size = (1,1,1,1)
-        # capture_size = np.array(capture_size)
-        # shm = shared_memory.SharedMemory(create=True, size= capture_size.nbytes)
-        #
-        # shared_data = np.ndarray(capture_size.shape, dtype=capture_size.dtype, buffer=shm.buf)
+        # capture_size = screencapture.CaptureBoard().get_capture_size()
+        capture_size = (1,1,1,1)
+        capture_size = np.array(capture_size) # (4,)
+        shm = shared_memory.SharedMemory(create=True, size= capture_size.nbytes)
+
+        shared_data = np.ndarray(capture_size.shape, dtype=capture_size.dtype, buffer=shm.buf)
+        sem =Semaphore()
 
 
 
         #-------------공유 메모리------------------
-        # work1 = Process(target=self.overlayClass.SetWindow(shared_data, shm.name, semaphore))
-        # work2 = Process(target=self.displayclass.analysize(shared_data, shm.name, semaphore))
+        work1 = Process(target=self.overlayClass.SetWindow, args=((shm.name, shared_data, sem)))
+        work2 = Process(target=self.displayclass.analysize(), args=(shm.name, shared_data, sem))
         #
         #
-        # work1.start()
-        # work2.start()
+        work1.start()
+        work2.start()
 
 
         #------------프로세스 풀------------
-        pool = multiprocessing.Pool(processes=2)
-        pool.apply(self.overlayClass.RunSetWindow())
-        pool.apply(self.displayclass.analysize())
+        # pool = multiprocessing.Pool(processes=2)
+        # pool.apply(self.overlayClass.RunSetWindow())
+        # pool.apply(self.displayclass.analysize())
 
 
 
@@ -95,6 +102,9 @@ class MainWindow(QMainWindow, ui_file):
 
 
 if __name__ == "__main__":
+    proc = multiprocessing.current_process()
+    print(f'--main--:{proc.name}')
+    print(f'PID:{os.getpid()}')
     app = QApplication(sys.argv)
     myWindow = MainWindow()
     myWindow.show()

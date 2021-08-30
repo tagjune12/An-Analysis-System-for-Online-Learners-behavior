@@ -13,7 +13,7 @@ import easydict
 FLAGS = easydict.EasyDict(
     {
         'framework' : 'tf',
-        'weights' : './checkpoints/yolov4-tiny-416',
+        'weights' : 'yolov4-tiny-416',
         'size' : 416,
         'tiny' : True,
         'model' : 'yolov4',
