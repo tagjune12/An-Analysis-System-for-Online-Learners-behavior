@@ -71,7 +71,7 @@ def preprocess(features):
     pose_data.append(center_of_shoulder)
 
   except Exception as e:
-    print('Cannot find some pose features')
+    # print('Cannot find some pose features')
     # print(e)
     pose_data.clear()
 
@@ -80,7 +80,7 @@ def preprocess(features):
       face_data.append(cvt_Landmark_to_list(features.face_landmarks.landmark[idx]))  # list[list] 형태를 가짐
 
   except Exception as e:
-    print('Cannot find some face features')
+    # print('Cannot find some face features')
     # print(e)
     face_data.clear()
 
@@ -101,7 +101,7 @@ def classify(features)->float:
 
   score = head_down_score + eye_closed_score + score
 
-  print('Log from classify of classification_module')
+  # print('Log from classify of classification_module')
   return score
 
 def detect_head_down(pose_landmarks:list)->float:
@@ -154,7 +154,7 @@ def detect_head_down(pose_landmarks:list)->float:
 
   # print(f'고개: {score}')
 
-  print('Log from detect_head_down of classification_module')
+  # print('Log from detect_head_down of classification_module')
   return score
 
 def detect_eye_closed(rate_angle_data:dict)->float:  # rate_angle_data ---> 얼굴 좌표로 얻은 비율과 각도
@@ -174,7 +174,7 @@ def detect_eye_closed(rate_angle_data:dict)->float:  # rate_angle_data ---> 얼�
   # print(rate_angle_data[keys_list[-5]])
 
   # print(f'눈점수: {score}')
-  print('Log from detect_eye_closed of classification_module')
+  # print('Log from detect_eye_closed of classification_module')
 
   return score
 

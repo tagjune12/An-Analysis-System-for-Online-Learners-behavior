@@ -1,111 +1,54 @@
-import os
-
-from PyQt5.QtWidgets import *
-from PyQt5 import uic
-import sys
-import display
-
-import screencapture
-from Overlay import overlay_2
 import multiprocessing
-from multiprocessing import Process, Semaphore, shared_memory
-import numpy as np
+import os
 import time
 
-ui_file = uic.loadUiType('./UI/main.ui')[0]
+from PyQt5.QtWidgets import *
+from PyQt5 import QtCore
+from PyQt5 import uic
+import sys
 
+from multiprocessing import Queue, Process
+from Overlay import overlay_2
+import analysisTest
+
+ui_file = uic.loadUiType('./UI/main.ui')[0]
+queue = Queue()
+# semaphore = Semaphore(2)
 
 class MainWindow(QMainWindow, ui_file):
-    # manager = multiprocessing.Manager()
-    # capture_tuple = manager.list()
-
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.overlay = overlay_2.Sticker(queue, './Overlay/red.gif', xy=[300, 300], size=0.3, on_top=True)
 
         # push button 이벤트 click listener
         self.analysisStartBtn.clicked.connect(self.analysisStartBtn_clicked)
         self.analysisEndBtn.clicked.connect(self.analysisEndBtn_clicked)
 
-        semaphore = Semaphore(1)
-        capture_size = (1,1,1,1)
-        capture_size = np.array(capture_size)
-        self.shm = shared_memory.SharedMemory(create=True, size= capture_size.nbytes)
-
-
-        # self.overlayClass = overlay_2.Sticker('red.gif', xy=[300, 300], size=0.3, on_top=True)
-        # self.overlayClass = overlay_2.Sticker(self.shm.name, semaphore,'red.gif', xy=[300, 300],size=0.3, on_top=True)
-        self.overlayClass = overlay_2.Sticker('Overlay/red.gif', xy=[300, 300], size=0.3, on_top=True)
-        self.displayclass = display.Display(self.shm.name, semaphore)
-
     # 분석 시작 버튼 클릭 이벤트 함수
     def analysisStartBtn_clicked(self):
         print("Start Button Clicked")
-        screencapture.CaptureBoard()
 
-        # self.displayclass.set_flag(True)
-        # analysis_thread = threading.Thread(target=self.displayclass.analysize())
-        # analysis_thread.daemon = True
-        # analysis_thread.start()
-
-
-        # self.overlayClass.show()
-        # self.overlayClass.RunSetWindow()
-        #
-        # self.overlayClass.execute_overlay()
-        # self.displayclass.start_analysis()
-
-        # semaphore = Semaphore(1)
-        # capture_size = screencapture.CaptureBoard().get_capture_size()
-        capture_size = (1,1,1,1)
-        capture_size = np.array(capture_size) # (4,)
-        shm = shared_memory.SharedMemory(create=True, size= capture_size.nbytes)
-
-        shared_data = np.ndarray(capture_size.shape, dtype=capture_size.dtype, buffer=shm.buf)
-        sem =Semaphore()
-
-
-
-        #-------------공유 메모리------------------
-        work1 = Process(target=self.overlayClass.SetWindow, args=((shm.name, shared_data, sem)))
-        work2 = Process(target=self.displayclass.analysize(), args=(shm.name, shared_data, sem))
-        #
-        #
-        work1.start()
-        work2.start()
-
-
-        #------------프로세스 풀------------
-        # pool = multiprocessing.Pool(processes=2)
-        # pool.apply(self.overlayClass.RunSetWindow())
-        # pool.apply(self.displayclass.analysize())
-
-
-
-        # work1 = Process(target=self.overlayClass.SetWindow)
-
-        # work1 = Process(target=self.overlayClass.RunSetWindow())
-        # work2 = Process(target=self.displayclass.analysize())
-
-        # work1.start()
-        # work2.start()
-
+        self.overlay.RunOverlay()
+        p = Process(name='analysizer', target=analysisTest.analysize, args=(queue,), daemon=True)
+        p.start()
 
 
     # 분석 종료 버튼 클릭 이벤트 함수
     def analysisEndBtn_clicked(self):
         print("End Button Clicked")
-        self.displayclass.set_flag(False)
 
-        self.overlayClass.timer.stop()
-        self.overlayClass.hide()
 
 
 if __name__ == "__main__":
     proc = multiprocessing.current_process()
-    print(f'--main--:{proc.name}')
+    print(f'__main__:{proc.name}')
     print(f'PID:{os.getpid()}')
+
     app = QApplication(sys.argv)
+
+    # overlay = overlay_2.Sticker(queue1, './Overlay/red.gif', xy=[300, 300], size=0.3, on_top=True)
+
     myWindow = MainWindow()
     myWindow.show()
     app.exec_()

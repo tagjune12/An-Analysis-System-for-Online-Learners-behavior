@@ -5,7 +5,7 @@ import cv2
 
 class FeatureDetector:
     def __init__(self):
-        self.mp_drawing = mp.solutions.drawing_utils
+        # self.mp_drawing = mp.solutions.drawing_utils
         # self.mp_drawing = drawing
         self.mp_holistic = mp.solutions.holistic
     def detectFeaturePoints(self, frame, image_start:list, image_end:list):

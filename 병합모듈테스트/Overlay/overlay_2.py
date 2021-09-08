@@ -1,19 +1,18 @@
+import multiprocessing
 import os
-
+import sys
+import time
 import win32gui
 import pywintypes
-import sys
+
 from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtGui import QMovie
 
-from time import sleep
-from multiprocessing import Process, Semaphore, shared_memory
-import numpy as np
-import threading
 
 class Sticker(QtWidgets.QMainWindow):
 
-    def __init__(self, img_path, xy,size=1.0, on_top=False):
+    def __init__(self, queue, img_path, xy, size=1.0, on_top=False):
         super(Sticker, self).__init__()
         self.timer = QtCore.QTimer(self)
         self.img_path = img_path
@@ -29,10 +28,11 @@ class Sticker(QtWidgets.QMainWindow):
         self.localPos = None
 
         self.setupUi()
-
+        self.queue = queue
         # self.show()
 
-    # 마우스 놓았을 때
+        self.window_size = [0, 0, 0, 0]
+
     def mouseReleaseEvent(self, a0: QtGui.QMouseEvent) -> None:
         if self.to_xy_diff == [0, 0] and self.from_xy_diff == [0, 0]:
             pass
@@ -111,8 +111,7 @@ class Sticker(QtWidgets.QMainWindow):
 
         label2 = QtWidgets.QLabel(centralWidget)
         label2.move(0,540)
-        # label2.setGeometry(QtCore.QRect(0,960,200,200)) #LTWH
-        # movie2 = QMovie(self.img_path)
+
         label2.setMovie(movie)
 
         label3 = QtWidgets.QLabel(centralWidget)
@@ -130,94 +129,45 @@ class Sticker(QtWidgets.QMainWindow):
         h = int(movie.frameRect().size().height() * self.size)
         movie.setScaledSize(QtCore.QSize(w, h))
         movie.start()
-        # label2.move(self.xy[0]+h, self.xy[1]+w)#################
-        # movie2.setScaledSize(QtCore.QSize(w, h))
-        # movie2.start()
 
-        ##창크기
-        # self.setGeometry(self.xy[0], self.xy[1], 1920, 1080)###############
-        # print(self.xy)
+    def SetWindow(self):
+        proc = multiprocessing.current_process()
+        # print(f'SetWindow:{proc.name}')
+        # print(f'PID:{os.getpid()}')
+        tWnd = WindowFinder('Zoom 회의').GetHwnd()
+        # print(tWnd) #test
+        if tWnd != 0 :
+            tRect = win32gui.GetWindowRect(tWnd) # tuple(L,T,R,B)
+            wWidth = tRect[2] - tRect[0]
+            wHeight = tRect[3] - tRect[1]
+            self.setGeometry(tRect[0], tRect[1], wWidth, wHeight)
 
-    def SetWindow(self, shm, shard_data, sem):
-        while True:
-            print(os.getpid())##########################
-            # tWnd = WindowFinder('계산기').GetHwnd()
-            # tWnd = WindowFinder('Zoom 회의').GetHwnd()
-            tWnd = WindowFinder('카메라').GetHwnd()
-            # print(tWnd) #test
-            if tWnd != 0:
-                # self.semaphore.acquire()
-                # exist_shm = shared_memory.SharedMemory(name=self.shm_name)
 
-                sem.acquire()
-                new_shm = shared_memory.SharedMemory(name=shm)
-                tmp_arr = np.ndarray(shard_data.shape, dtype=shard_data.dtype, buffer=new_shm.buf)
+    def RunOverlay(self):
+        # proc = multiprocessing.current_process()
+        # print(f'RunOverlay:{proc.name}')
+        # print(f'PID:{os.getpid()}')
 
-                tRect = win32gui.GetWindowRect(tWnd)  # tuple(L,T,R,B)
-                wWidth = tRect[2] - tRect[0]
-                wHeight = tRect[3] - tRect[1]
-                self.setGeometry(tRect[0], tRect[1], wWidth, wHeight)
-                self.show()
-                # 추가한 부분 by.이택준
-                print(f'Log from SetWindow:{tRect}')
 
-                for tmp in tmp_arr:
-                    tmp_arr[tmp] = tRect[tmp]
-
-                print("tmp_arr = ",tmp_arr)
-
-                sem.release()
-
-                # window_size = np.ndarray((4,), dtype=np.int32)
-                # window_size[0] = tRect[0]
-                # window_size[1] = tRect[1]
-                # window_size[2] = tRect[2]
-                # window_size[3] = tRect[3]
-                # self.semaphore.release()
-
-    def RunSetWindow(self):
         self.timer = QtCore.QTimer(self)
-        self.timer.setInterval(100)
+        # self.timer.setInterval(100)
         self.timer.timeout.connect(self.SetWindow)
         self.timer.start()
-        # threading.Timer(0.05,self.SetWindow, args=(capture_size, shm, semaphore)).start()
+        self.show()
+
+        self.consumer = Consumer(self.queue)
+        self.consumer.poped.connect(self.get_state_result)
+        self.consumer.start()
 
 
+    def StopOverlay(self):
+        self.timer.stop()
+        self.hide()
 
-    # def SetWindow(self):
-    #     # while True:
-    #         # tWnd = WindowFinder('계산기').GetHwnd()
-    #         # tWnd = WindowFinder('Zoom 회의').GetHwnd()
-    #         tWnd = WindowFinder('카메라').GetHwnd()
-    #         # print(tWnd) #test
-    #         if tWnd != 0:
-    #             tRect = win32gui.GetWindowRect(tWnd)  # tuple(L,T,R,B)
-    #             wWidth = tRect[2] - tRect[0]
-    #             wHeight = tRect[3] - tRect[1]
-    #             self.setGeometry(tRect[0], tRect[1], wWidth, wHeight)
-    #             self.show()
-    #             # 추가한 부분 by.이택준
-    #             # screencapture.CaptureBoard().set_capture_size(tRect)
-    #             print(f'Log from SetWindow:{tRect}')
-    #
-    #         # sleep(0.1)
-    #
-    # def RunSetWindow(self):
-    #     self.timer = QtCore.QTimer(self)
-    #     self.timer.setInterval(100)
-    #     self.timer.timeout.connect(self.SetWindow)
-    #     self.timer.start()
+    # 분석결과 얻어와서 결과에 따라 이미지 뿌려주는거
+    def get_state_result(self, value):
+        print(f'분석결과 출력 in Overlay:{value}')
 
-'''
-    # 추가한 부분 by.이택준
-    def execute_overlay(self):
-        # queue = Queue()
-        # value = Array('i',[])
-        # work2 = Process(target=self.RunSetWindow,name='오버레이 모듈',args=(value))
-        # work2.start()
-'''
-
-# 부모 윈도우의 핸들을 검사합니다.
 class WindowFinder:
     def __init__(self, windowname):
         try:
@@ -237,6 +187,24 @@ class WindowFinder:
 
     __hwnd = 0
 
+# 태도분석 결과 받으면 알려주는함수 구현해야함
+class Consumer(QThread):
+    poped = pyqtSignal(list)
 
+    def __init__(self, q):
+        super().__init__()
+        self.q = q
+        # self.semaphore = sem
 
+    def run(self):
+        print("consumer 쓰레드 실행")
+        while True:
 
+            if not self.q.empty():
+                # self.semaphore.acquire()
+                data = self.q.get()
+
+                self.poped.emit(data)
+                print('시그널 보냄')
+
+            # time.sleep(10)

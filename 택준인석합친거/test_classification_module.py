@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import custom_drawing_utils
 import time
+from PIL import ImageFont, ImageDraw, Image
 
 mean_data = {
     '왼쪽 광대뼈 수직 비율': 0.566011,
@@ -424,7 +425,9 @@ with mp_holistic.Holistic(  # model_complexity = 2,
 
         # Draw landmark annotation on the image.
         image.flags.writeable = True
+
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
         # mp_drawing.draw_landmarks(
         #     image, results.face_landmarks, mp_holistic.FACE_CONNECTIONS)
         # mp_drawing.draw_landmarks(
@@ -433,6 +436,13 @@ with mp_holistic.Holistic(  # model_complexity = 2,
         #     image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS)
         mp_drawing.draw_landmarks(
             image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS)
+
+        image = Image.fromarray(image)
+        draw = ImageDraw.Draw(image)
+        font = ImageFont.truetype("fonts/gulim.ttc", 20)
+
+        draw.text((100,100), predict_class, font = font, fill=(0,0,255))
+        image = np.array(image)
 
         image = cv2.resize(image, (720, 480))
         cv2.imshow('MediaPipe Holistic', image)

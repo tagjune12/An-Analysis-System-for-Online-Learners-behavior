@@ -13,7 +13,7 @@ import easydict
 FLAGS = easydict.EasyDict(
     {
         'framework' : 'tf',
-        'weights' : 'yolov4-tiny-416',
+        'weights' : './checkpoints/yolov4-tiny-416',
         'size' : 416,
         'tiny' : True,
         'model' : 'yolov4',
@@ -71,6 +71,7 @@ class PeopleDetector:
         image_start = np.delete(image_start, 0, axis=0)  # 검출된 사람의 영역 시작, 0으로 입력되어 있는 부분 삭제
         image_end = np.delete(image_end, 0, axis=0)  # 검출된 사람의 영역 끝, 0으로 입력되어 있는 부분 삭제
 
+        print('Log from detect_person')
         return True, image_start, image_end
 
 
