@@ -50,6 +50,7 @@ def get_angle(p1:list, p2:list, p3:list)->float:
   return angle
 
 def cvt_Landmark_to_list(landmark)-> list:
+  print(f"cvt_Landmark_to_List 실험하는중")
   x = landmark.x
   y = landmark.y
   # z = landmark.z
