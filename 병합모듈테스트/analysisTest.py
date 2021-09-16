@@ -43,6 +43,10 @@ def analysize(queue):
             image_height, image_width = capture_frame.shape[0], capture_frame.shape[1]
 
             print(image_width, image_height)
+            # 2인의 경우
+            image_start = [[0, 0], [int(image_width / 2), 0]] # x,y
+            image_end = [[int(image_width / 2), image_height], [image_width , image_height]] # x,y
+
             # 4인의 경우
             # image_start = [[0, 0], [int(image_width / 2), 0], [0, int(image_height / 2)], [int(image_width / 2), int(image_height / 2)]] # x,y
             # image_end = [[int(image_width / 2), int(image_height / 2)], [image_width , int(image_height / 2)], [int(image_width / 2), image_height], [image_width, image_height]] # x,y
@@ -63,7 +67,7 @@ def analysize(queue):
 
 
                 else:
-                    a = [result[0]]
+                    a = result
                     print(a)
                     queue.put(a)
                     # print(result)

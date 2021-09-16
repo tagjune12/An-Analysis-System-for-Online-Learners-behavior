@@ -50,7 +50,6 @@ def get_angle(p1:list, p2:list, p3:list)->float:
   return angle
 
 def cvt_Landmark_to_list(landmark)-> list:
-  print(f"cvt_Landmark_to_List 실험하는중")
   x = landmark.x
   y = landmark.y
   # z = landmark.z
@@ -63,32 +62,54 @@ def preprocess(features):
   pose_data = []
   face_data = []
 
-  try:
+  # try:
+  #
+  #   for idx in POSE_POINT.values():
+  #     pose_data.append(cvt_Landmark_to_list(features.pose_landmarks.landmark[idx])) # list[list] 형태를 가짐
+  #
+  #   center_of_shoulder = [(pose_data[1][0] + pose_data[2][0])/2, (pose_data[1][1] + pose_data[2][1])/2]
+  #   pose_data.append(center_of_shoulder)
+  #
+  # except Exception as e:
+  #   print('Cannot find some pose features')
+  #   print(e)
+  #   pose_data.clear()
+  #
+  # try:
+  #   for idx in FACE_POINT:
+  #     face_data.append(cvt_Landmark_to_list(features.face_landmarks.landmark[idx]))  # list[list] 형태를 가짐
+  #
+  # except Exception as e:
+  #   print('Cannot find some face features')
+  #   print(e)
+  #   face_data.clear()
 
-    for idx in POSE_POINT.values():
-      pose_data.append(cvt_Landmark_to_list(features.pose_landmarks.landmark[idx])) # list[list] 형태를 가짐
+  for feature in features:
+    try:
 
-    center_of_shoulder = [(pose_data[1][0] + pose_data[2][0])/2, (pose_data[1][1] + pose_data[2][1])/2]
-    pose_data.append(center_of_shoulder)
+      for idx in POSE_POINT.values():
+        pose_data.append(cvt_Landmark_to_list(feature.pose_landmarks.landmark[idx]))  # list[list] 형태를 가짐
 
-  except Exception as e:
-    # print('Cannot find some pose features')
-    # print(e)
-    pose_data.clear()
+      center_of_shoulder = [(pose_data[1][0] + pose_data[2][0]) / 2, (pose_data[1][1] + pose_data[2][1]) / 2]
+      pose_data.append(center_of_shoulder)
 
-  try:
-    for idx in FACE_POINT:
-      face_data.append(cvt_Landmark_to_list(features.face_landmarks.landmark[idx]))  # list[list] 형태를 가짐
+    except Exception as e:
+      print('Cannot find some pose features')
+      print(e)
+      pose_data.clear()
 
-  except Exception as e:
-    # print('Cannot find some face features')
-    # print(e)
-    face_data.clear()
+    try:
+      for idx in FACE_POINT:
+        face_data.append(cvt_Landmark_to_list(feature.face_landmarks.landmark[idx]))  # list[list] 형태를 가짐
 
+    except Exception as e:
+      print('Cannot find some face features')
+      print(e)
+      face_data.clear()
 
   return  face_data, pose_data
 
-def classify(features)->float:
+def classify(features:list)->float:
 
   face_landmarks, pose_landmarks = preprocess(features)
   if not face_landmarks or not pose_landmarks :
