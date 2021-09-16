@@ -105,30 +105,44 @@ class Sticker(QtWidgets.QMainWindow):
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground, True) ####
 
 ##############
-        label = QtWidgets.QLabel(centralWidget)
-        movie = QMovie(self.img_path)
-        label.setMovie(movie)
+        # self.label1 = QtWidgets.QLabel(centralWidget)
+        # movie = QMovie(self.img_path)
+        # self.label1.setMovie(movie)
+        # movie.start()
+        # movie.stop()
+        #
+        # w = int(movie.frameRect().size().width() * self.size)
+        # h = int(movie.frameRect().size().height() * self.size)
+        # movie.setScaledSize(QtCore.QSize(w, h))
+        # movie.start()
 
-        label2 = QtWidgets.QLabel(centralWidget)
-        label2.move(0,540)
+        self.smile = QtGui.QPixmap("smile.png").scaledToWidth(100)
+        self.boring = QtGui.QPixmap("boring.png").scaledToWidth(100)
+        self.sleeping = QtGui.QPixmap("sleeping.png").scaledToWidth(100)
+        self.question = QtGui.QPixmap("qq.png").scaledToWidth(100)
 
-        label2.setMovie(movie)
-
-        label3 = QtWidgets.QLabel(centralWidget)
-        label3.move(960, 0)
-        label3.setMovie(movie)
-        label4 = QtWidgets.QLabel(centralWidget)
-        label4.move(960, 540)
-        label4.setMovie(movie)
+        self.label = [0,0,0,0]
+        for i in range(4):
+            self.label[i] = QtWidgets.QLabel(centralWidget)
+            self.label[i].setPixmap(self.question)
 
 
-        movie.start()
-        movie.stop()
 
-        w = int(movie.frameRect().size().width() * self.size)
-        h = int(movie.frameRect().size().height() * self.size)
-        movie.setScaledSize(QtCore.QSize(w, h))
-        movie.start()
+
+
+        # self.label2 = QtWidgets.QLabel(centralWidget)
+        self.label[1].move(0,540)
+
+        # self.label2.setMovie(movie)
+
+        # self.label3 = QtWidgets.QLabel(centralWidget)
+        self.label[2].move(960, 0)
+        # self.label3.setMovie(movie)
+        # self.label4 = QtWidgets.QLabel(centralWidget)
+        self.label[3].move(960, 540)
+        # self.label4.setMovie(movie)
+
+
 
     def SetWindow(self):
         proc = multiprocessing.current_process()
@@ -167,6 +181,15 @@ class Sticker(QtWidgets.QMainWindow):
     # 분석결과 얻어와서 결과에 따라 이미지 뿌려주는거
     def get_state_result(self, value):
         print(f'분석결과 출력 in Overlay:{value}')
+        for i in range(4):
+            if value[0] == "??1":   #집중
+                self.label[i].setPixmap(self.smile)
+            elif value[0] == "??2":   #지루함
+                self.label[i].setPixmap(self.boring)
+            elif value[0] == "??3":   #잠
+                self.label[i].setPixmap(self.sleeping)
+            else:   #식별불가
+                self.label[i].setPixmap(self.question)
 
 class WindowFinder:
     def __init__(self, windowname):
