@@ -44,16 +44,16 @@ def analysize(queue):
 
             print(image_width, image_height)
             # 2인의 경우
-            image_start = [[0, 0], [int(image_width / 2), 0]] # x,y
-            image_end = [[int(image_width / 2), image_height], [image_width , image_height]] # x,y
+            # image_start = [[0, 0], [int(image_width / 2), 0]] # x,y
+            # image_end = [[int(image_width / 2), image_height], [image_width , image_height]] # x,y
 
             # 4인의 경우
-            # image_start = [[0, 0], [int(image_width / 2), 0], [0, int(image_height / 2)], [int(image_width / 2), int(image_height / 2)]] # x,y
-            # image_end = [[int(image_width / 2), int(image_height / 2)], [image_width , int(image_height / 2)], [int(image_width / 2), image_height], [image_width, image_height]] # x,y
+            image_start = [[0, 0], [int(image_width / 2), 0], [0, int(image_height / 2)], [int(image_width / 2), int(image_height / 2)]] # x,y
+            image_end = [[int(image_width / 2), int(image_height / 2)], [image_width , int(image_height / 2)], [int(image_width / 2), image_height], [image_width, image_height]] # x,y
 
             # 1인의 경우
-            image_start = [[0,0]]
-            image_end = [[image_width, image_height]]
+            # image_start = [[0,0]]
+            # image_end = [[image_width, image_height]]
 
             if len(np.squeeze(image_start)) != 0:
                 features = featureDetector.detectFeaturePoints(capture_frame, image_start, image_end)  # 특징점 검출

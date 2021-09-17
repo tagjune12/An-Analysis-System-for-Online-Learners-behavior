@@ -21,7 +21,7 @@ FACE_RATE_DICT={"왼쪽 광대뼈 수직 비율": [39, 40, 39, 35], "오른쪽 �
                  "입술 왼쪽 각도": [27, 24, 26],"입술 오른쪽 각도": [27, 25, 26]
                 }
 
-def point_to_point_distance(p1:list, p2:list)->float:
+def point_to_point_distance(p1:list, p2:list)->float: # p1, p2는 list[list] 형태여야한다.
   x = p2[0]- p1[0]
   y = p2[1]- p1[1]
   # z = p2[2]- p1[2]
@@ -59,8 +59,8 @@ def cvt_Landmark_to_list(landmark)-> list:
 
 def preprocess(features):
 
-  pose_data = []
-  face_data = []
+  # pose_data = []
+  # face_data = []
 
   # try:
   #
@@ -84,7 +84,40 @@ def preprocess(features):
   #   print(e)
   #   face_data.clear()
 
+  # pose_data = []
+  # face_data = []
+
+  # for feature in features:
+  #   try:
+  #
+  #     for idx in POSE_POINT.values():
+  #       pose_data.append(cvt_Landmark_to_list(feature.pose_landmarks.landmark[idx]))  # list[list] 형태를 가짐
+  #
+  #     center_of_shoulder = [(pose_data[1][0] + pose_data[2][0]) / 2, (pose_data[1][1] + pose_data[2][1]) / 2]
+  #     pose_data.append(center_of_shoulder)
+  #
+  #   except Exception as e:
+  #     print('Cannot find some pose features')
+  #     print(e)
+  #     pose_data.clear()
+  #
+  #   try:
+  #     for idx in FACE_POINT:
+  #       face_data.append(cvt_Landmark_to_list(feature.face_landmarks.landmark[idx]))  # list[list] 형태를 가짐
+  #
+  #   except Exception as e:
+  #     print('Cannot find some face features')
+  #     print(e)
+  #     face_data.clear()
+
+  pose_datas = []
+  face_datas = []
+
   for feature in features:
+
+    pose_data = []
+    face_data = []
+
     try:
 
       for idx in POSE_POINT.values():
@@ -107,24 +140,47 @@ def preprocess(features):
       print(e)
       face_data.clear()
 
-  return  face_data, pose_data
+    face_datas.append(face_data)
+    pose_datas.append(pose_data)
+
+  print(f'Log from preprocess{np.shape(face_datas)}, {np.shape(pose_datas)}')
+  return  face_datas, pose_datas # list[list], list[list] # (2,8,2) (2,42,2)
 
 def classify(features:list)->float:
 
   face_landmarks, pose_landmarks = preprocess(features)
-  if not face_landmarks or not pose_landmarks :
-    return None
 
-  score = 1.0
+  scores = []
 
-  head_down_score = detect_head_down(pose_landmarks)
-
-  eye_closed_score = detect_eye_closed(process_data_rates(face_landmarks))
-
-  score = head_down_score + eye_closed_score + score
+  # if not face_landmarks or not pose_landmarks :
+  #   return None
+  #
+  # score = 1.0
+  #
+  # head_down_score = detect_head_down(pose_landmarks)
+  #
+  # eye_closed_score = detect_eye_closed(process_data_rates(face_landmarks))
+  #
+  # score = head_down_score + eye_closed_score + score
 
   # print('Log from classify of classification_module')
-  return score
+
+  for face_landmark, pose_landmark in zip(face_landmarks, pose_landmarks):
+    print(f"응기잇{type(face_landmark)}, {type(pose_landmark)}")
+    if not face_landmark or not pose_landmark :
+      return None
+
+    score = 1.0
+
+    head_down_score = detect_head_down(pose_landmark)
+
+    eye_closed_score = detect_eye_closed(process_data_rates(face_landmark))
+
+    scores.append(head_down_score + eye_closed_score + score)
+
+    # print('Log from classify of classification_module')
+
+  return scores
 
 def detect_head_down(pose_landmarks:list)->float:
   nose_to_sholuder_l = point_to_point_distance(pose_landmarks[0],pose_landmarks[1])
