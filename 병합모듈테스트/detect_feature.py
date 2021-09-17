@@ -11,7 +11,7 @@ class FeatureDetector:
     def detectFeaturePoints(self, frame, image_start:list, image_end:list):
         # mp_drawing = self.mp_drawing
         mp_holistic = self.mp_holistic
-
+        results = []
         for i in range(len(image_start)):
             print('Log from detectFeaturePoints')
             start = tuple(image_start[i])
@@ -20,7 +20,8 @@ class FeatureDetector:
             image = frame[start[1]:end[1], start[0]:end[0]]  # 이미지[Y좌표, X좌표]
             # Convert the BGR image to RGB before processing.
             with mp_holistic.Holistic(min_detection_confidence=0.4, min_tracking_confidence=0.5) as holistic:
-                results = holistic.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+                # results = holistic.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+                results.append(holistic.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB)))
                 '''
                 annotated_image = image.copy()  # 찾은 사람 이미지
                 mp_drawing.draw_landmarks(

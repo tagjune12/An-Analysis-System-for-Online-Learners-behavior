@@ -149,6 +149,7 @@ class Sticker(QtWidgets.QMainWindow):
         # print(f'SetWindow:{proc.name}')
         # print(f'PID:{os.getpid()}')
         tWnd = WindowFinder('Zoom 회의').GetHwnd()
+        # tWnd = WindowFinder('카메라').GetHwnd()
         # print(tWnd) #test
         if tWnd != 0 :
             tRect = win32gui.GetWindowRect(tWnd) # tuple(L,T,R,B)
