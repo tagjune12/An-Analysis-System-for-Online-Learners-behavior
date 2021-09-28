@@ -126,24 +126,21 @@ class Sticker(QtWidgets.QMainWindow):
             self.label[i] = QtWidgets.QLabel(centralWidget)
             self.label[i].setPixmap(self.question)
 
-
-
-
-
+        self.label[0].move(120, 70)
         # self.label2 = QtWidgets.QLabel(centralWidget)
-        self.label[1].move(0,540)
+        self.label[1].move(980, 70)
 
         # self.label2.setMovie(movie)
 
         # self.label3 = QtWidgets.QLabel(centralWidget)
-        self.label[2].move(960, 0)
+        self.label[2].move(120, 560)
         # self.label3.setMovie(movie)
         # self.label4 = QtWidgets.QLabel(centralWidget)
-        self.label[3].move(960, 540)
+        self.label[3].move(980, 560)
         # self.label4.setMovie(movie)
 
 
-
+    # Zoom회의 프로그램이 이동할때 마다 Overlay를 해당 좌표로 이동 by.상민
     def SetWindow(self):
         proc = multiprocessing.current_process()
         # print(f'SetWindow:{proc.name}')
@@ -157,7 +154,7 @@ class Sticker(QtWidgets.QMainWindow):
             wHeight = tRect[3] - tRect[1]
             self.setGeometry(tRect[0], tRect[1], wWidth, wHeight)
 
-
+    # 오버레이를 실행하는 함수
     def RunOverlay(self):
         # proc = multiprocessing.current_process()
         # print(f'RunOverlay:{proc.name}')
@@ -170,6 +167,7 @@ class Sticker(QtWidgets.QMainWindow):
         self.timer.start()
         self.show()
 
+        # Q스레드를 이용하여 실시간으로 태도분석 프로세스에서 넘어오는 값을 받아옴 by.택준
         self.consumer = Consumer(self.queue)
         self.consumer.poped.connect(self.get_state_result)
         self.consumer.start()
@@ -179,15 +177,15 @@ class Sticker(QtWidgets.QMainWindow):
         self.timer.stop()
         self.hide()
 
-    # 분석결과 얻어와서 결과에 따라 이미지 뿌려주는거
+    # 분석결과 얻어와서 결과에 따라 이미지 뿌려주는거 by.상민
     def get_state_result(self, value):
         print(f'분석결과 출력 in Overlay:{value}')
         for i in range(4):
-            if value[0] == "??1":   #집중
+            if value[i] == "집중":   #집중
                 self.label[i].setPixmap(self.smile)
-            elif value[0] == "??2":   #지루함
+            elif value[i] == "지루함":   #지루함
                 self.label[i].setPixmap(self.boring)
-            elif value[0] == "??3":   #잠
+            elif value[i] == "잠":   #잠
                 self.label[i].setPixmap(self.sleeping)
             else:   #식별불가
                 self.label[i].setPixmap(self.question)
@@ -212,6 +210,7 @@ class WindowFinder:
     __hwnd = 0
 
 # 태도분석 결과 받으면 알려주는함수 구현해야함
+# 태도 분석 프로세스에서 값을 전달하면 커스텀qt시그널을 이용하여 값을 넘겨주면서 연결된 함수 실행 by.택준
 class Consumer(QThread):
     poped = pyqtSignal(list)
 

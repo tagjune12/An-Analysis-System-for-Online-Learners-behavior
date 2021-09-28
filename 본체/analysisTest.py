@@ -11,15 +11,13 @@ import detect_feature
 import detect_person
 import time
 
+# 학습자 태도 분석하는 함수 by.택준
 def analysize(queue):
-    print('으엙')
     proc = multiprocessing.current_process()
-    print(f'분석모듀우우우우ㅜㄹ:{proc.name}')
-    print(f'PID:{os.getpid()}')
-
+    # Yolo 사용하는 경우
     # peopleDetector = detect_person.PeopleDetector()
     featureDetector = detect_feature.FeatureDetector()
-
+    # Zoom 회의 프로그램을 찾는다.
     tWnd = WindowFinder('Zoom 회의').GetHwnd()
     # tWnd = WindowFinder('카메라').GetHwnd()
 
@@ -27,6 +25,7 @@ def analysize(queue):
         print("분석시작")
 
         if tWnd != 0:
+            # Zoom 회의 프로그램의 위치
             tRect = win32gui.GetWindowRect(tWnd)  # tuple(L,T,R,B)
 
             image = ImageGrab.grab(bbox=tRect)
@@ -34,11 +33,7 @@ def analysize(queue):
 
 
             capture_frame = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            # flag, image_start, image_end = peopleDetector.detect(capture_frame)  # 사람 감지
 
-            # print(np.shape(capture_frame))
-            # print(np.shape(image_start))
-            # print(np.shape(image_end))
 #---------------------------- YOLO 사용 안하는 경우 -------------------------------
             image_height, image_width = capture_frame.shape[0], capture_frame.shape[1]
 
@@ -56,29 +51,32 @@ def analysize(queue):
             # image_end = [[image_width, image_height]]
 
             if len(np.squeeze(image_start)) != 0:
+                # 이미지를 이용하여 특징점을 찾아내는 부분 by.택준
                 features = featureDetector.detectFeaturePoints(capture_frame, image_start, image_end)  # 특징점 검출
-                # print(f'features:{features}')
+
+                print(f'시부레1:{len(features)}')
+
+                # 검출한 특징점을 이용하여 태도를 분석하는 부분 by.택준
                 result = clf.classify(features)
 
-                print(result)
-                # 화면에 표시
-                if result == None:
+                print(f'시부레2{result}')
+                # 결과가 없는 경우 로그 출력
+                if len(result) < 4:
                     print('Cannot find student')
+                    print(f'이게 나라냐?{len(result)}')
+                    queue.put(['None','None','None','None'])
 
-
+                # 태도분석 결과가 존재할 경우 공유메모리 Queue에 분석 결과를 전달한다.
                 else:
-                    a = result
-                    print(a)
-                    queue.put(a)
-                    # print(result)
+                    print(result)
+                    queue.put(result)
 
         else:
             print('No image')
-            # continue
-            # break
+
         time.sleep(1)
 
-
+# 특정 윈도우를 찾아내기 위한 클래스 by.상민
 class WindowFinder:
     def __init__(self, windowname):
         try:
