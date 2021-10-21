@@ -54,16 +54,16 @@ def analysize(queue):
                 # 이미지를 이용하여 특징점을 찾아내는 부분 by.택준
                 features = featureDetector.detectFeaturePoints(capture_frame, image_start, image_end)  # 특징점 검출
 
-                print(f'시부레1:{len(features)}')
+                print(f'로그1:{len(features)}')
 
                 # 검출한 특징점을 이용하여 태도를 분석하는 부분 by.택준
                 result = clf.classify(features)
 
-                print(f'시부레2{result}')
+                print(f'로그2{result}')
                 # 결과가 없는 경우 로그 출력
                 if len(result) < 4:
                     print('Cannot find student')
-                    print(f'이게 나라냐?{len(result)}')
+
                     queue.put(['None','None','None','None'])
 
                 # 태도분석 결과가 존재할 경우 공유메모리 Queue에 분석 결과를 전달한다.

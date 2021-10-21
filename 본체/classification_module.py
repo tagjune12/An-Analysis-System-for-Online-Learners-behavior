@@ -231,13 +231,13 @@ def detect_head_down(pose_landmarks:list, face_landmarks:list, visibilities:list
     # print("왼손 검출")
     # print("손부터 뺨까지 거리", point_to_point_distance(pose_landmarks[5], face_landmarks[36]))
     if abs(point_to_point_distance(pose_landmarks[5], face_landmarks[36])) < 0.28:
-      # print("턱 괴고 있음@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+      print("턱 괴고 있음@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
       pose_result_dict['손목'] = "턱 굄"
   elif r_wrist_visible > 0.50 and (r_wrist_visible > l_wrist_visible):  # 0.70
     # print("오른손 검출")
     # print("손부터 뺨까지 거리", point_to_point_distance(pose_landmarks[6], face_landmarks[32]))
     if abs(point_to_point_distance(pose_landmarks[6], face_landmarks[32])) < 0.28:
-      # print("턱 괴고 있음@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+      print("턱 괴고 있음@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
       pose_result_dict['손목'] = "턱 굄"
 
 
@@ -251,18 +251,24 @@ def detect_eye_closed(rate_angle_data:dict, pose_landmarks)->float:  # rate_angl
 
   nose_to_sholuder_c = point_to_point_distance(pose_landmarks[0], pose_landmarks[7])
 
-  if nose_to_sholuder_c >= 0.190:
-    top_base_score, middle_base_score = 31, 25
+  # if nose_to_sholuder_c >= 0.190:
+  #   top_base_score, middle_base_score = 31, 25
+  #
+  # elif nose_to_sholuder_c >= 0.182:
+  #   top_base_score, middle_base_score = 30, 25
+  #
+  # elif nose_to_sholuder_c >= 0.155:  # 이경우엔 눈흐림 기준 -4 ?? 뜰때34 33, 33 32, 35 33 ㅡ  흐리게  25 24, 27 26, 27 25 ㅡ 감을때 23 22, 22 21, 23 22
+  #   top_base_score, middle_base_score = 30, 25
+  #
+  # else:  # 이경우엔 눈흐림 기준 -3 ??뜰때 31 30, 30 29, 30, 29 ㅡ감을때 24 24, 22 21, 22 21, 24 23
+  #   top_base_score, middle_base_score = 29, 25.5
 
-  elif nose_to_sholuder_c >= 0.182:
-    top_base_score, middle_base_score = 30, 25
-
-  elif nose_to_sholuder_c >= 0.155:  # 이경우엔 눈흐림 기준 -4 ?? 뜰때34 33, 33 32, 35 33 ㅡ  흐리게  25 24, 27 26, 27 25 ㅡ 감을때 23 22, 22 21, 23 22
-    top_base_score, middle_base_score = 30, 25
-
-  else:  # 이경우엔 눈흐림 기준 -3 ??뜰때 31 30, 30 29, 30, 29 ㅡ감을때 24 24, 22 21, 22 21, 24 23
-    top_base_score, middle_base_score = 29, 25.5
-
+  top_base_score, middle_base_score = 40, 31
+  print('-------------------------------------------')
+  print(nose_to_sholuder_c)
+  print(rate_angle_data['왼눈 오른쪽 각도'])
+  print(rate_angle_data['오른눈 왼쪽 각도'])
+  print('-------------------------------------------')
   if top_base_score < rate_angle_data['왼눈 오른쪽 각도'] or top_base_score < rate_angle_data['오른눈 왼쪽 각도']:
     print('눈 떠있음')
     face_result_dict['눈'] = '눈 떠있음'

@@ -12,7 +12,7 @@ from Overlay import overlay_2
 import analysisTest
 
 # UI파일 불러오는 부분
-ui_file = uic.loadUiType('./UI/main.ui')[0]
+ui_file = uic.loadUiType('./UI/main2.ui')[0]
 # 멀티 프로세싱과 IPC를 위한 공유 메모리 Queue by.택준
 queue = Queue()
 
