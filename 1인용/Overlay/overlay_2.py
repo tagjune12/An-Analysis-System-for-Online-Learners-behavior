@@ -121,23 +121,11 @@ class Sticker(QtWidgets.QMainWindow):
         self.sleeping = QtGui.QPixmap("sleeping.png").scaledToWidth(100)
         self.question = QtGui.QPixmap("qq.png").scaledToWidth(100)
 
-        self.label = [0,0,0,0]
-        for i in range(4):
-            self.label[i] = QtWidgets.QLabel(centralWidget)
-            self.label[i].setPixmap(self.question)
+        self.label = 0
+        self.label = QtWidgets.QLabel(centralWidget)
+        self.label.setPixmap(self.question)
 
-        self.label[0].move(120, 70)
-        # self.label2 = QtWidgets.QLabel(centralWidget)
-        self.label[1].move(980, 70)
-
-        # self.label2.setMovie(movie)
-
-        # self.label3 = QtWidgets.QLabel(centralWidget)
-        self.label[2].move(120, 560)
-        # self.label3.setMovie(movie)
-        # self.label4 = QtWidgets.QLabel(centralWidget)
-        self.label[3].move(980, 560)
-        # self.label4.setMovie(movie)
+        self.label.move(120, 70)
 
 
     # Zoom회의 프로그램이 이동할때 마다 Overlay를 해당 좌표로 이동 by.상민
@@ -180,15 +168,14 @@ class Sticker(QtWidgets.QMainWindow):
     # 분석결과 얻어와서 결과에 따라 이미지 뿌려주는거 by.상민
     def get_state_result(self, value):
         print(f'분석결과 출력 in Overlay:{value}')
-        for i in range(4):
-            if value[i] == "집중":   #집중
-                self.label[i].setPixmap(self.smile)
-            elif value[i] == "지루함":   #지루함
-                self.label[i].setPixmap(self.boring)
-            elif value[i] == "잠":   #잠
-                self.label[i].setPixmap(self.sleeping)
-            else:   #식별불가
-                self.label[i].setPixmap(self.question)
+        if value[0] == "집중":   #집중
+            self.label.setPixmap(self.smile)
+        elif value[0] == "지루함":   #지루함
+            self.label.setPixmap(self.boring)
+        elif value[0] == "잠":   #잠
+            self.label.setPixmap(self.sleeping)
+        else:   #식별불가
+            self.label.setPixmap(self.question)
 
 class WindowFinder:
     def __init__(self, windowname):
